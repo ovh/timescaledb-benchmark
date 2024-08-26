@@ -1,0 +1,5 @@
+{{ ansible_managed | comment }}
+
+{% for k, v in postgres_exporter_defaults.items() %}
+{{ k | upper }}="{{ v }}"
+{% endfor %}

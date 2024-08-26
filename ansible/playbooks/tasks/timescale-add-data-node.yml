@@ -1,0 +1,21 @@
+---
+- name: Query existing Timescale data nodes
+  community.postgresql.postgresql_query:
+    login_user: "{{ timescale_username }}"
+    login_password: "{{ timescale_password }}"
+    db: "{{ timescale_database_name }}"
+    query: "select node_name from timescaledb_information.data_nodes;"
+  register: result
+
+- name: Extract existing Timescale data nodes
+  set_fact:
+    existing_data_nodes: "{{ result['query_result'] | map(attribute='node_name') | list }}"
+
+- name: Add Timescale data node
+  community.postgresql.postgresql_query:
+    login_user: "{{ timescale_username }}"
+    login_password: "{{ timescale_password }}"
+    db: "{{ timescale_database_name }}"
+    query: "select add_data_node(node_name => '{{ node_name | mandatory }}', host => '{{ node_host | mandatory }}', database => '{{ node_database | default(timescale_database_name) }}');"
+    autocommit: true
+  when: node_name not in existing_data_nodes

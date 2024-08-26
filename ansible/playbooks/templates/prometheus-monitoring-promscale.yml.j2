@@ -1,0 +1,10 @@
+---
+# {{ ansible_managed }}
+# Configuration to scrape prometheus instances
+
+{% for host in groups['promscale'] -%}
+- targets:
+    - "{{ hostvars[host]['ansible_default_ipv4']['address'] }}:{{ promscale_port }}"
+  labels:
+    instance: {{ hostvars[host]['ansible_hostname'] }}
+{% endfor %}

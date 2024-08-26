@@ -1,0 +1,25 @@
+---
+- name: Configure grafana playbook
+  hosts: grafana
+  gather_facts: true
+  pre_tasks:
+    - name: Gather facts from dependent nodes
+      setup:
+      delegate_to: "{{ item }}"
+      delegate_facts: true
+      loop: "{{ groups['prometheus_monitoring'] + groups['haproxy'] }}"
+    - name: Generate datasource configuration
+      set_fact:
+        datasource_configs:
+          - name: "{{ grafana_datasource_monitoring }}"
+            type: prometheus
+            access: proxy
+            url: "http://{{ hostvars[groups['prometheus_monitoring'][0]]['ansible_default_ipv4']['address'] }}:{{ prometheus_port }}"
+            basicAuth: false
+          - name: promscale
+            type: prometheus
+            access: proxy
+            url: "http://{{ hostvars[groups['haproxy'][0]]['ansible_default_ipv4']['address'] }}:{{ promscale_port }}"
+            basicAuth: false
+  roles:
+    - grafana

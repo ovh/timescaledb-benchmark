@@ -1,0 +1,3 @@
+[submodule "ansible/extra/bastion"]
+	path = ansible/extra/bastion
+	url = https://github.com/ovh/the-bastion-ansible-wrapper.git

@@ -1,0 +1,5 @@
+---
+promscale_pkg_url: https://github.com/timescale/promscale/releases/download/0.6.2/promscale_0.6.2_Linux_x86_64.deb
+promscale_db_connections_max: 8
+promscale_db_writer_connection_concurrency: 8
+promscale_limitnofile: 1048576

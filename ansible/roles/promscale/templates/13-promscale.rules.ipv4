@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+
+* filter
+-N PROMSCALE
+
+-A INPUT -p tcp -j PROMSCALE -m comment --comment "promscale" --dport {{promscale_port}}
+
+{% for host in groups['haproxy'] + groups['prometheus_monitoring'] %}
+-A PROMSCALE  -j ACCEPT -m comment --comment "{{ host }}" -s {{ hostvars[host]['ansible_facts']['default_ipv4']['address'] }}
+{% endfor %}
+
+COMMIT

@@ -1,0 +1,36 @@
+---
+- name: Install package
+  apt:
+    pkg:
+      - haproxy
+      - haproxyctl
+    state: present
+
+- name: Gather facts from dependent servers
+  setup:
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  loop: "{{ groups['promscale'] + groups['prometheus'] + groups['grafana'] }}"
+
+- name: Create configuration file
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+  notify: reload haproxy
+
+- name: Ensure service is up
+  service:
+    name: haproxy
+    state: started
+
+- name: Allow input traffic
+  template:
+    src: 13-haproxy.rules.ipv4
+    dest: /etc/iptables.d/13-haproxy.rules.ipv4
+  notify: restart iptables
+
+- name: Tune kernel settings
+  template:
+    src: 30-haproxy.conf.j2
+    dest: /etc/sysctl.d/30-haproxy.conf
+  notify: restart sysctl

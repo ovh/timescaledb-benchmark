@@ -1,0 +1,6 @@
+---
+dependencies:
+  - role: common
+  - role: cloudalchemy.node_exporter
+    vars:
+      node_exporter_web_listen_address: "{{ansible_default_ipv4.address}}:{{node_exporter_port}}"

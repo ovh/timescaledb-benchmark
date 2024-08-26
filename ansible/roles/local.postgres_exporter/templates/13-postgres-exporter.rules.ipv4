@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+
+* filter
+-N PGEXPORTER
+
+-A INPUT -p tcp -j PGEXPORTER -m comment --comment "postgres_exporter" --dport {{postgres_exporter_port}}
+
+{% for host in groups['prometheus'] %}
+-A PGEXPORTER -j ACCEPT -m comment --comment "{{ host }}" -s {{ hostvars[host]['ansible_facts']['default_ipv4']['address'] }}
+{% endfor %}
+
+COMMIT

@@ -1,0 +1,5 @@
+---
+- name: Stop PostgreSQL service
+  service:
+    name: postgresql
+    state: stopped

@@ -1,0 +1,5 @@
+---
+- name: Stop Promscale service
+  service:
+    name: promscale
+    state: stopped

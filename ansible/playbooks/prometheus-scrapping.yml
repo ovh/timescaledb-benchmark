@@ -1,0 +1,49 @@
+---
+- name: Configure prometheus playbook
+  hosts: prometheus_scrapping
+  gather_facts: false
+  vars:
+    node_exporter_urls: []
+    scrap_number: 150
+    storage_retention: "1h"
+    remote_write: []
+  pre_tasks:
+    - name: Gather facts from dependent servers for target configuration
+      setup:
+      delegate_to: "{{ item }}"
+      delegate_facts: true
+      loop: "{{ groups['node_exporter'] + groups['haproxy'] + groups['prometheus'] }}"
+    - name: Generate list of node-exporter to scrape
+      set_fact:
+        node_exporter_urls: "{{node_exporter_urls}} + [ '{{hostvars[item]['ansible_default_ipv4']['address']}}:{{node_exporter_port}}' ]"
+      with_items: "{{ groups['node_exporter'] }}"
+    - name: Generate job configuration
+      set_fact:
+        job_config_{{item}}:
+          - job_name: "bulk-{{item}}"
+            metrics_path: "/metrics"
+            static_configs:
+              - targets: "{{ node_exporter_urls }}"
+                labels:
+                  group: "bulk-{{item}}"
+      with_sequence: start=0 end={{scrap_number}}
+    - name: Generate scrap configuration
+      set_fact:
+        scrap_configs: "{{ scrap_configs|default([]) + vars ['job_config_' + item] }}"
+      with_sequence: start=0 end={{scrap_number}}
+    - name: Generate remote write configuration
+      set_fact:
+        remote_write:
+          - url: "http://{{hostvars[groups['haproxy'][0]]['ansible_default_ipv4']['address']}}:{{promscale_port}}/write"
+            name: "promscale"
+            remote_timeout: 30s
+            queue_config:
+              capacity: 10000
+              max_samples_per_send: 3000
+              batch_send_deadline: 30s
+              min_shards: 4
+              max_shards: 400
+              min_backoff: 100ms
+              max_backoff: 10s
+  roles:
+    - prometheus

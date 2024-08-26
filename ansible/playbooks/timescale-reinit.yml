@@ -1,0 +1,14 @@
+- name: Stop Promscale
+  hosts: promscale
+  tasks:
+    - include_tasks: tasks/promscale-service-stop.yml
+
+- name: Stop Timescale services and remove data directories
+  hosts: timescale
+  tasks:
+    - include_tasks: tasks/postgresql-service-stop.yml
+    - include_tasks: tasks/postgresql-datadir-remove.yml
+
+- import_playbook: timescale.yml
+- import_playbook: timescale-access-nodes.yml
+- import_playbook: promscale.yml

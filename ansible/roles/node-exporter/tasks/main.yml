@@ -1,0 +1,12 @@
+---
+- name: Gather facts from Prometheus servers for iptables
+  setup:
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  loop: "{{ groups['prometheus'] }}"
+
+- name: Allow Node exporter input traffic
+  template:
+    src: 13-node-exporter.rules.ipv4
+    dest: /etc/iptables.d/13-node-exporter.rules.ipv4
+  notify: restart iptables

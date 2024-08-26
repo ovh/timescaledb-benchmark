@@ -1,0 +1,10 @@
+---
+dependencies:
+  - role: common
+  - role: cloudalchemy.grafana
+    vars:
+      grafana_address: "{{ ansible_default_ipv4.address }}"
+      grafana_security:
+        admin_user: "{{ grafana_username }}"
+        admin_password: "{{ grafana_password }}"
+      grafana_datasources: "{{ datasource_configs }}"

@@ -1,0 +1,10 @@
+---
+# {{ ansible_managed }}
+# Configuration to scrape node_exporter instances
+
+{% for host in groups['all'] -%}
+- targets:
+    - "{{ hostvars[host]['ansible_default_ipv4']['address'] }}:{{ node_exporter_port }}"
+  labels:
+    instance: {{ hostvars[host]['ansible_hostname'] }}
+{% endfor %}

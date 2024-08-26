@@ -1,0 +1,18 @@
+---
+grafana_dashboards:
+  # node_exporter
+  - dashboard_id: 1860
+    datasource: "{{ grafana_datasource_monitoring }}"
+    revision_id: 23
+  # postgres_exporter
+  - dashboard_id: 9628
+    datasource: "{{ grafana_datasource_monitoring }}"
+    revision_id: 7
+  # prometheus
+  - dashboard_id: 3662
+    datasource: "{{ grafana_datasource_monitoring }}"
+    revision_id: 2
+  # prometheus remote storage
+  - dashboard_id: 10303
+    datasource: "{{ grafana_datasource_monitoring }}"
+    revision_id: 1

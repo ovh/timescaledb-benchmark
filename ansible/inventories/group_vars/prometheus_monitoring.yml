@@ -1,0 +1,18 @@
+---
+prometheus_scrape_configs:
+  - job_name: "node"
+    file_sd_configs:
+      - files:
+          - "{{ prometheus_config_dir }}/file_sd/node.yml"
+  - job_name: "postgres"
+    file_sd_configs:
+      - files:
+          - "{{ prometheus_config_dir }}/file_sd/postgres.yml"
+  - job_name: "prometheus"
+    file_sd_configs:
+      - files:
+          - "{{ prometheus_config_dir }}/file_sd/prometheus.yml"
+  - job_name: "promscale"
+    file_sd_configs:
+      - files:
+          - "{{ prometheus_config_dir }}/file_sd/promscale.yml"

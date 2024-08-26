@@ -1,0 +1,6 @@
+---
+- name: restart iptables
+  command: ***OBFUSCATED*** restart
+
+- name: restart sysctl
+  command: /usr/sbin/sysctl --system

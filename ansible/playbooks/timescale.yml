@@ -1,0 +1,8 @@
+- name: Configure Timescale hosts
+  hosts:
+  - timescale
+  roles:
+    - common
+    - postgresql
+    - local.postgres_exporter
+    - timescale

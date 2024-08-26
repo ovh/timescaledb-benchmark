@@ -1,0 +1,11 @@
+listen promscale
+    bind *:{{ promscale_port|default(9201) }}
+    mode http
+
+{% include 'haproxy-http-listen-options.j2' %}
+
+    option httpchk GET /healthz
+
+{% for host in groups['promscale'] %}
+    server {{ host }} {{ hostvars[host]['ansible_facts']['default_ipv4']['address'] }}:{{ promscale_port|default(9201) }} check
+{% endfor %}

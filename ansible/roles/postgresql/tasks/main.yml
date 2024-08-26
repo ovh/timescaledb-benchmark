@@ -1,0 +1,93 @@
+- name: Install PGDG APT repository key
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+
+- name: Configure PGDG APT repository
+  apt_repository:
+    repo: "deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main"
+    update_cache: yes
+
+- name: Install PostgreSQL packages
+  apt:
+    state: present
+    pkg: "{{ postgresql_packages }}"
+
+- name: Create data directory
+  file:
+    name: "{{ postgresql_data_dir }}"
+    owner: postgres
+    group: postgres
+    state: directory
+
+- name: Check if data directory has been initialized
+  stat:
+    path: "{{ postgresql_data_dir }}/PG_VERSION"
+  register: pgdata_dir_version
+
+- name: Initialize data directory
+  command: "{{ postgresql_bin_path }}/initdb -k {{ postgresql_data_dir }}"
+  when: not pgdata_dir_version.stat.exists
+  become: true
+  become_user: postgres
+
+- name: Create PostgreSQL configuration
+  template:
+    src: ovh.conf
+    dest: "{{ postgresql_conf_path }}/conf.d/ovh.conf"
+    owner: postgres
+    group: postgres
+  notify: restart postgresql
+
+- name: Create PostgreSQL HBA configuration
+  template:
+    src: pg_hba.conf
+    dest: "{{ postgresql_conf_path }}/pg_hba.conf"
+    owner: postgres
+    group: postgres
+  notify: reload postgresql
+
+- name: Configure psqlrc
+  template:
+    src: .psqlrc
+    dest: /root/.psqlrc
+
+- name: Start PostgreSQL service
+  service:
+    name: postgresql
+    state: started
+
+- name: Create superuser
+  community.postgresql.postgresql_user:
+    name: "{{ postgresql_username }}"
+    password: "{{ postgresql_password }}"
+    role_attr_flags: SUPERUSER,CREATEROLE,CREATEDB,INHERIT,LOGIN,REPLICATION,BYPASSRLS # root
+  become: true
+  become_user: postgres
+
+- name: Create environment variables
+  lineinfile:
+    path: /root/.bashrc
+    line: "{{ item }}"
+  loop:
+    - "export PGUSER={{ postgresql_username }}"
+    - "export PGHOSTADDR=127.0.0.1"
+
+- name: Configure pgpass for root
+  template:
+    src: .pgpass
+    dest: /root/.pgpass
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Gather facts from dependent servers for iptables
+  setup:
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  loop: "{{ groups['timescale'] + groups['promscale'] }}"
+
+- name: Add iptables rules
+  template:
+    src: 12-postgresql.rules.ipv4
+    dest: /etc/iptables.d/12-postgresql.rules.ipv4
+  notify: restart iptables

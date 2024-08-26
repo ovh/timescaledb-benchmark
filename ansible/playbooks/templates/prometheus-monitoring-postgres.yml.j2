@@ -1,0 +1,10 @@
+---
+# {{ ansible_managed }}
+# Configuration to scrape postgres_exporter instances
+
+{% for host in groups['timescale'] -%}
+- targets:
+    - "{{ hostvars[host]['ansible_default_ipv4']['address'] }}:{{ postgres_exporter_port }}"
+  labels:
+    instance: {{ hostvars[host]['ansible_hostname'] }}
+{% endfor %}

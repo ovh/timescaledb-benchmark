@@ -1,0 +1,57 @@
+---
+- name: Copy the postgres_exporter default file
+  template:
+    src: postgres_exporter.default.j2
+    dest: /etc/default/postgres_exporter
+    owner: root
+    group: "{{ _postgres_exporter_system_user }}"
+    mode: 0640
+  notify: restart postgres_exporter
+
+- name: Copy the postgres_exporter systemd service file
+  template:
+    src: postgres_exporter.service.j2
+    dest: /etc/systemd/system/postgres_exporter.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart postgres_exporter
+
+- name: Create postgres_exporter config directory
+  file:
+    path: "/etc/postgres_exporter"
+    state: directory
+    owner: root
+    group: root
+    mode: u+rwX,g+rwX,o=rX
+
+- name: Copy the postgres_exporter queries file
+  template:
+    src: queries.yaml.j2
+    dest: /etc/postgres_exporter/queries.yaml
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart postgres_exporter
+
+- name: Allow postgres_exporter port in SELinux on RedHat OS family
+  seport:
+    ports: "{{ postgres_exporter_port }}"
+    proto: tcp
+    setype: http_port_t
+    state: present
+  when:
+    - ansible_version.full is version_compare('2.4', '>=')
+    - ansible_selinux.status == "enabled"
+
+- name: Gather facts from client nodes
+  setup:
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  loop: "{{ groups['prometheus'] }}"
+
+- name: Allow input traffic
+  template:
+    src: 13-postgres-exporter.rules.ipv4
+    dest: /etc/iptables.d/13-postgres-exporter.rules.ipv4
+  notify: restart iptables

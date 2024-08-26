@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+
+* filter
+-N HAPROXY
+
+-A INPUT -p tcp -j HAPROXY -m comment --comment "promscale" --dport {{promscale_port}}
+
+{% for host in groups['prometheus'] + groups['grafana'] %}
+-A HAPROXY  -j ACCEPT -m comment --comment "{{ host }}" -s {{ hostvars[host]['ansible_facts']['default_ipv4']['address'] }}
+{% endfor %}
+
+COMMIT

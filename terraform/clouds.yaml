@@ -1,0 +1,12 @@
+---
+clouds:
+  openstack:
+    auth:
+      auth_url: https://auth.cloud.ovh.net/v3
+      username: "***OBFUSCATED***"
+      project_id: "***OBFUSCATED***"
+      project_name: "***OBFUSCATED***"
+      user_domain_name: "Default"
+    region_name: "GRA7"
+    interface: "public"
+    identity_api_version: 3

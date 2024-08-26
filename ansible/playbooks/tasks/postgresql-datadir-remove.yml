@@ -1,0 +1,5 @@
+---
+- name: Remove data directory
+  file:
+    path: "{{ postgresql_data_dir }}"
+    state: absent

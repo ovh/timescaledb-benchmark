@@ -1,0 +1,26 @@
+---
+- name: Re-init Prometheus scrapping instances
+  hosts: prometheus_scrapping
+  tasks:
+    - name: Stop Prometheus service
+      service:
+        name: prometheus
+        state: stopped
+
+    - name: Remove data directory
+      file:
+        path: /var/lib/prometheus
+        state: absent
+
+    - name: Create data directory
+      file:
+        path: /var/lib/prometheus
+        state: directory
+        owner: prometheus
+        group: prometheus
+        mode: 0755
+
+    - name: Start Prometheus service
+      service:
+        name: prometheus
+        state: started

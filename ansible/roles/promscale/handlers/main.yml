@@ -1,0 +1,8 @@
+---
+- name: reload systemd
+  command: systemctl daemon-reload
+
+- name: restart promscale
+  service:
+    name: promscale
+    state: restarted

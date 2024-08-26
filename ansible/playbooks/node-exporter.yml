@@ -1,0 +1,6 @@
+---
+- name: Configure node-exporter playbook
+  hosts: all
+  gather_facts: true
+  roles:
+    - node-exporter

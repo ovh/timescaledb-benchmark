@@ -1,0 +1,3 @@
+---
+postgres_exporter_defaults:
+  DATA_SOURCE_NAME: "postgresql://{{ postgresql_username }}:{{ postgresql_password }}@127.0.0.1:5432/postgres?sslmode=require"

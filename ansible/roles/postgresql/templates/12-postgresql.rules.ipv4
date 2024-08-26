@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+
+* filter
+-N POSTGRES
+
+-A INPUT -p tcp -j POSTGRES -m comment --comment "postgresql" --dport 5432
+
+{% for host in groups['timescale']+groups['promscale'] %}
+-A POSTGRES -j ACCEPT -m comment --comment "{{ host }}" -s {{ hostvars[host]['ansible_facts']['default_ipv4']['address'] }}
+{% endfor %}
+
+COMMIT

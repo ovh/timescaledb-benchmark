@@ -1,0 +1,35 @@
+---
+- name: Install package
+  apt:
+    deb: "{{ promscale_pkg_url }}"
+
+- name: Override service file
+  template:
+    src: promscale.service.j2
+    dest: /etc/systemd/system/promscale.service
+  notify:
+    - reload systemd
+    - restart promscale
+
+- name: Create configuration file
+  template:
+    src: promscale.conf.j2
+    dest: /etc/promscale.conf
+  notify: restart promscale
+
+- name: Ensure service is running
+  service:
+    name: promscale
+    state: started
+
+- name: Gather facts from client nodes
+  setup:
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  loop: "{{ groups['haproxy'] + groups['prometheus_monitoring'] }}"
+
+- name: Allow input traffic
+  template:
+    src: 13-promscale.rules.ipv4
+    dest: /etc/iptables.d/13-promscale.rules.ipv4
+  notify: restart iptables

@@ -1,0 +1,6 @@
+---
+collections:
+  - community.postgresql
+  - cloudalchemy.node_exporter
+  - cloudalchemy.prometheus
+  - cloudalchemy.grafana

@@ -1,0 +1,9 @@
+# {{ ansible_managed }}
+
+max_prepared_transactions = 1000
+enable_partitionwise_aggregate = on
+jit = off
+statement_timeout = 0
+timescaledb.passfile = '/var/lib/postgresql/.pgpass'
+timescaledb.max_background_workers = 48
+wal_level = 'logical'

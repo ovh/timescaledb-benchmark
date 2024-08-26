@@ -1,0 +1,9 @@
+---
+dependencies:
+  - role: common
+  - role: cloudalchemy.prometheus
+    vars:
+      prometheus_web_listen_address: "{{ansible_default_ipv4.address}}:{{prometheus_port}}"
+      prometheus_scrape_configs: "{{scrap_configs}}"
+      prometheus_storage_retention: "{{storage_retention|default('30d')}}"
+      prometheus_remote_write: "{{remote_write|default([])}}"

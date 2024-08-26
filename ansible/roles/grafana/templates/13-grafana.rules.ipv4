@@ -1,0 +1,5 @@
+# {{ ansible_managed }}
+
+* filter
+-A INPUT -p tcp -j ACCEPT -m comment --comment "grafana" --dport 3000
+COMMIT

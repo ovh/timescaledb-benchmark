@@ -1,0 +1,24 @@
+---
+- name: Set grub choice for virtual servers
+  shell: "echo 'SET grub-pc/install_devices /dev/sda' | debconf-communicate"
+  when: ansible_virtualization_type == "openstack"
+
+# https://github.com/ansible/ansible/issues/48352
+- name: Allow release-info to change for APT repositories
+  command: apt-get update -y --allow-releaseinfo-change
+
+- name: Upgrade packages
+  apt:
+    update_cache: yes
+    cache_valid_time: 600
+    upgrade: yes
+
+- name: Install packages
+  apt:
+    state: present
+    pkg:
+      - python3-psycopg2
+      - figlet
+
+- name: Create motd
+  shell: "/usr/bin/hostname | /usr/bin/figlet -f /usr/share/figlet/smslant.flf > /etc/motd"

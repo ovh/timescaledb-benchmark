@@ -1,0 +1,47 @@
+---
+- name: Configure Prometheus to scrape the bench infrastructure
+  hosts: prometheus_monitoring
+  roles:
+    - cloudalchemy.prometheus
+  pre_tasks:
+    - name: Gather facts to configure targets
+      setup:
+      delegate_to: "{{ item }}"
+      delegate_facts: true
+      loop: "{{ groups['all'] }}"
+
+    - name: Create node_exporter configuration file
+      template:
+        src: prometheus-monitoring-node.yml.j2
+        dest: /etc/prometheus/file_sd/node.yml
+        owner: root
+        group: prometheus
+        mode: 0644
+      notify: reload prometheus
+
+    - name: Create postgres_exporter configuration file
+      template:
+        src: prometheus-monitoring-postgres.yml.j2
+        dest: /etc/prometheus/file_sd/postgres.yml
+        owner: root
+        group: prometheus
+        mode: 0644
+      notify: reload prometheus
+
+    - name: Create prometheus configuration file
+      template:
+        src: prometheus-monitoring-prometheus.yml.j2
+        dest: /etc/prometheus/file_sd/prometheus.yml
+        owner: root
+        group: prometheus
+        mode: 0644
+      notify: reload prometheus
+
+    - name: Create promscale configuration file
+      template:
+        src: prometheus-monitoring-promscale.yml.j2
+        dest: /etc/prometheus/file_sd/promscale.yml
+        owner: root
+        group: prometheus
+        mode: 0644
+      notify: reload prometheus

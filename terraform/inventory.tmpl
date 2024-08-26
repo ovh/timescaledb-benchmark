@@ -1,0 +1,43 @@
+# Terraform managed
+
+[haproxy]
+%{ for instance in haproxy_instances ~}
+${instance.name} ansible_ssh_host=${instance.access_ip_v4}
+%{ endfor ~}
+
+[grafana]
+%{ for instance in grafana_instances ~}
+${instance.name} ansible_ssh_host=${instance.access_ip_v4}
+%{ endfor ~}
+
+[node_exporter]
+%{ for instance in node-exporter_instances ~}
+${instance.name} ansible_ssh_host=${instance.access_ip_v4}
+%{ endfor ~}
+
+[prometheus]
+%{ for instance in prometheus_instances ~}
+${instance.name} ansible_ssh_host=${instance.access_ip_v4}
+%{ endfor ~}
+
+[prometheus_monitoring]
+# First prometheus node is used to store bench metrics
+%{ for index, instance in prometheus_instances ~}
+%{ if index == 0 ~}
+${instance.name} ansible_ssh_host=${instance.access_ip_v4}
+%{ endif ~}
+%{ endfor ~}
+
+[prometheus_scrapping]
+# Other prometheus nodes are used to bench scrapping
+%{ for index, instance in prometheus_instances ~}
+%{ if index != 0 ~}
+${instance.name} ansible_ssh_host=${instance.access_ip_v4}
+%{ endif ~}
+%{ endfor ~}
+
+
+[promscale]
+%{ for instance in promscale_instances ~}
+${instance.name} ansible_ssh_host=${instance.access_ip_v4}
+%{ endfor ~}

@@ -1,0 +1,9 @@
+---
+- import_playbook: playbooks/node-exporter.yml
+- import_playbook: playbooks/timescale.yml
+- import_playbook: playbooks/timescale-access-nodes.yml
+- import_playbook: playbooks/promscale.yml
+- import_playbook: playbooks/haproxy.yml
+- import_playbook: playbooks/prometheus-monitoring.yml
+- import_playbook: playbooks/prometheus-scrapping.yml
+- import_playbook: playbooks/grafana.yml

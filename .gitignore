@@ -1,0 +1,8 @@
+*.retry
+terraform/terraform
+terraform/.terraform.lock.hcl
+terraform/.terraform
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+ansible/roles/cloudalchemy.*
+scripts/.bash_aliases_bench

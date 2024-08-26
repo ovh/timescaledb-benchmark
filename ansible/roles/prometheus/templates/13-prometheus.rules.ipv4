@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+
+* filter
+-N PROMETHEUS
+
+-A INPUT -p tcp -j PROMETHEUS -m comment --comment "prometheus" --dport {{prometheus_port}}
+
+{% for host in groups['grafana'] + groups['prometheus'] %}
+-A PROMETHEUS  -j ACCEPT -m comment --comment "{{ host }}" -s {{ hostvars[host]['ansible_facts']['default_ipv4']['address'] }}
+{% endfor %}
+
+COMMIT

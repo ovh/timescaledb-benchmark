@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+
+* filter
+-N NODEEXPORTER
+
+-A INPUT -p tcp -j NODEEXPORTER -m comment --comment "node-exporter" --dport {{node_exporter_port}}
+
+{% for host in groups['prometheus'] %}
+-A NODEEXPORTER  -j ACCEPT -m comment --comment "{{ host }}" -s {{ hostvars[host]['ansible_facts']['default_ipv4']['address'] }}
+{% endfor %}
+
+COMMIT

@@ -1,0 +1,16 @@
+---
+
+- name: Install Promscale
+  hosts: promscale
+  pre_tasks:
+    - name: Gather facts from dependent nodes
+      setup:
+      delegate_to: "{{ item }}"
+      delegate_facts: true
+      loop: "{{ groups['timescale_access_nodes'] }}"
+    - name: Define timescale_address variable
+      set_fact:
+        # first access nodes
+        timescale_address: "{{ hostvars[groups['timescale_access_nodes'][0]]['ansible_default_ipv4']['address'] }}"
+  roles:
+    - promscale

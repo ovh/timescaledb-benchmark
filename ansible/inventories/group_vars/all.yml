@@ -1,0 +1,37 @@
+---
+postgresql_bin_path: /usr/lib/postgresql/13/bin
+postgresql_conf_path: /etc/postgresql/13/main
+postgresql_data_dir: /home/postgresql
+postgresql_packages:
+  - postgresql-13
+  - postgresql-common
+
+# For PoC usage only
+postgresql_username: postgres
+postgresql_password: "***OBFUSCATED***"
+
+timescale_packages:
+  - timescaledb-2-postgresql-13
+  - timescaledb-tools
+
+# For PoC usage only
+timescale_username: timescale
+timescale_password: "***OBFUSCATED***"
+timescale_database_name: timescale
+
+grafana_username: grafana
+grafana_password: "***OBFUSCATED***"
+grafana_datasource_monitoring: prometheus-monitoring
+
+prometheus_port: 9090 
+prometheus_version: 2.30.3
+
+node_exporter_port: 9100
+node_exporter_version: 1.2.2
+_node_exporter_system_group: root  # because of grsec
+
+promscale_port: 9201
+promscale_db_connections_max: 500
+promscale_db_writer_connection_concurrency: 32
+
+postgres_exporter_port: 9187

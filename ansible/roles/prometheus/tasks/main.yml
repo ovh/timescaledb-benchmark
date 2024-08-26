@@ -1,0 +1,12 @@
+---
+- name: Gather facts from Grafana servers for iptables
+  setup:
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  loop: "{{ groups['grafana'] + groups['prometheus']}}"
+
+- name: Allow Prometheus input traffic
+  template:
+    src: 13-prometheus.rules.ipv4
+    dest: /etc/iptables.d/13-prometheus.rules.ipv4
+  notify: restart iptables

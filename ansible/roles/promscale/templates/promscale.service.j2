@@ -1,0 +1,24 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=TimescaleDB Promscale Service
+Documentation=https://github.com/timescale/promscale
+After=syslog.target
+After=network.target
+
+[Service]
+Type=simple
+User=promscale
+Group=promscale
+EnvironmentFile=/etc/promscale.conf
+ExecStart=/usr/bin/promscale $OPTIONS
+Restart=on-failure
+RestartSec=10
+KillMode=mixed
+KillSignal=SIGINT
+ProtectSystem=strict
+NoNewPrivileges=true
+LimitNOFILE={{ promscale_limitnofile }}
+
+[Install]
+WantedBy=multi-user.target

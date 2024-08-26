@@ -1,0 +1,6 @@
+---
+- name: Allow Grafana input traffic
+  template:
+    src: 13-grafana.rules.ipv4
+    dest: /etc/iptables.d/13-grafana.rules.ipv4
+  notify: restart iptables
